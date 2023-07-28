@@ -1,0 +1,9 @@
+App(
+    appid="python_playground",
+    name="Python Playground",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="python_playground_app",
+    requires=["gui", "cli"],
+    stack_size=2 * 1024,
+    fap_category="Dev",
+)
