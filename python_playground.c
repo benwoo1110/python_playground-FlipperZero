@@ -25,38 +25,63 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
 
     app->cli = cli;
     app->cli_running = true;
-    cli_write(app->cli, (uint8_t*)("CLI Connection Start"), 20);
-    cli_write(app->cli, (uint8_t*)"\r\n", 2);
     view_dispatcher_switch_to_view(app->view_dispatcher, CONNECTED_VIEW_ID);    
+
+    // connect
+    protocol_send_empty(app->cli, CNT_FLIPPER_START_ID);
+
     while (app->cli_running) {
         if (!cli_is_connected(app->cli)) {
             app->cli_running = false;
             break;
         }
+
         // recieve payload
         ProtocolData_t* proto_data = protocol_receive(app->cli, 5);
-        //vm->debug_msg = "Recieving";
-        if (proto_data == NULL || proto_data->id != GUI_DRAW_ID) {
-            //vm->debug_msg = "Ohno";
+        if (proto_data == NULL) {
             continue;
         }
-        ConnectedViewModel_t* vm = view_get_model(app->connected_view);
-        if (vm->draw_data != NULL) {
-            free(vm->draw_data->draw_arr);
-            free(vm->draw_data);
+
+        switch (proto_data->id) {
+            case GUI_DRAW_ID: {
+                ConnectedViewModel_t* vm = view_get_model(app->connected_view);
+                if (vm->draw_data != NULL) {
+                    for (uint16_t i = 0; i < vm->draw_data->draw_arr_size; i++) {
+                        protocol_data_free(&vm->draw_data->draw_arr[i]);
+                    }
+                    free(vm->draw_data->draw_arr);
+                    free(vm->draw_data);
+                }
+                vm->draw_data = proto_data->data;
+                view_commit_model(app->connected_view, true);
+                break;
+            }
+            default: {
+                FURI_LOG_E(LOG_TAG, "Unknown protocol id: %d", proto_data->id);
+                break;
+            }
         }
-        vm->draw_data = proto_data->data;
 
-        char str[64];
-        snprintf(str, 64, "%u", ((GuiDrawData_t*)(vm->draw_data))->draw_arr_size);
-        vm->debug_msg = str;
-        view_commit_model(app->connected_view, true);
+        free(proto_data);
     }
-    // const char* close = "CLOSE";
-    // ProtocolPayload_t* payload = protocol_payload_alloc(TEST_ID, (uint8_t*)close, strlen(close));
-    // protocol_payload_send(payload, app->cli);
 
+    // disconnect
+    protocol_send_empty(app->cli, CNT_FLIPPER_STOP_ID);
+
+    // cleanup
     app->cli = NULL;
+    ConnectedViewModel_t* vm = view_get_model(app->connected_view);
+    if (vm->draw_data != NULL) {
+        for (uint16_t i = 0; i < vm->draw_data->draw_arr_size; i++) {
+            protocol_data_free(&vm->draw_data->draw_arr[i]);
+        }
+        free(vm->draw_data->draw_arr);
+        free(vm->draw_data);
+        vm->draw_data = NULL;
+    }
+    view_commit_model(app->connected_view, true);
+
+    // go back
     view_dispatcher_switch_to_view(app->view_dispatcher, DISCONNECTED_VIEW_ID);
 }
 

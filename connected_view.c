@@ -16,7 +16,7 @@ bool connected_input_callback(InputEvent* input_event, void* ctx) {
     input_data->key = input_event->key;
     input_data->type = input_event->type;
     protocol_send(app->cli, INPUT_ID, input_data);
-
+    free(input_data);
     furi_mutex_release(app->mutex);
     return true;
 }
@@ -45,23 +45,28 @@ void connected_draw_callback(Canvas* canvas, void* ctx) {
         // canvas_draw_str_aligned(canvas, 20, 10+(i*10), AlignCenter, AlignCenter, str);
         
         switch (draw_element->id) {
-            case GUI_DRAW_STR_ID:
-            {
+            case GUI_DRAW_STR_ID: {
                 GuiDrawStrData_t* draw_str_data = (GuiDrawStrData_t*)draw_element->data;
-                canvas_draw_str_aligned(canvas, draw_str_data->x, draw_str_data->y, AlignCenter, AlignCenter, draw_str_data->str);
-            }
+                canvas_draw_str(canvas, draw_str_data->x, draw_str_data->y, draw_str_data->str);
                 break;
-            case GUI_DRAW_FRAME_ID:
-            {
+            }
+            case GUI_DRAW_STR_ALIGN_ID: {
+                GuiDrawStrAlignData_t* draw_str_align_data = (GuiDrawStrAlignData_t*)draw_element->data;
+                canvas_draw_str_aligned(canvas, draw_str_align_data->x, draw_str_align_data->y, draw_str_align_data->horizontal, draw_str_align_data->vertical, draw_str_align_data->str);
+                break;
+            }
+            case GUI_DRAW_FRAME_ID: {
                 GuiDrawFrameData_t* draw_frame_data = (GuiDrawFrameData_t*)draw_element->data;
                 canvas_draw_frame(canvas, draw_frame_data->x, draw_frame_data->y, draw_frame_data->width, draw_frame_data->height);
-            }
                 break;
+            }
+            case GUI_DRAW_RFRAME_ID: {
+                GuiDrawRFrameData_t* draw_rframe_data = (GuiDrawRFrameData_t*)draw_element->data;
+                canvas_draw_rframe(canvas, draw_rframe_data->x, draw_rframe_data->y, draw_rframe_data->width, draw_rframe_data->height, draw_rframe_data->radius);
+                break;
+            }
             default:
-            {
-                
-            }
-                break;
+                break;    
         }
     }
 }

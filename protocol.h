@@ -3,8 +3,12 @@
 #include <furi.h>
 #include <cli/cli.h>
 #include <input/input.h>
+#include <gui/gui.h>
 
-#define TEST_ID                 0x0001
+#define CNT_FLIPPER_START_ID    0x0001
+#define CNT_PYTHON_START_ID     0x0002
+#define CNT_FLIPPER_STOP_ID     0xFFF1
+#define CNT_PYTHON_STOP_ID      0xFFF2
 
 #define INPUT_ID                0x1001
 
@@ -12,6 +16,7 @@
 #define GUI_DRAW_STR_ID         0x2001
 #define GUI_DRAW_STR_ALIGN_ID   0x2002
 #define GUI_DRAW_FRAME_ID       0x2003
+#define GUI_DRAW_RFRAME_ID      0x2004
 
 typedef struct ProtocolPayload {
     uint16_t    id;
@@ -41,6 +46,14 @@ typedef struct GuiDrawStrData {
     char*       str;
 } GuiDrawStrData_t;
 
+typedef struct GuiDrawStrAlignData {
+    uint8_t     x;
+    uint8_t     y;
+    Align       horizontal;
+    Align       vertical;
+    char*       str;
+} GuiDrawStrAlignData_t;
+
 typedef struct GuiDrawFrameData {
     uint8_t     x;
     uint8_t     y;
@@ -48,11 +61,21 @@ typedef struct GuiDrawFrameData {
     uint8_t     height;
 } GuiDrawFrameData_t;
 
+typedef struct GuiDrawRFrameData {
+    uint8_t     x;
+    uint8_t     y;
+    uint8_t     width;
+    uint8_t     height;
+    uint8_t     radius;
+} GuiDrawRFrameData_t;
+
 void protocol_payload_free(ProtocolPayload_t* payload);
 
 void protocol_data_free(ProtocolData_t* data);
 
 ProtocolData_t* protocol_receive(Cli* cli, uint32_t timeout_ms);
+
+void protocol_send_empty(Cli* cli, uint16_t id);
 
 void protocol_send(Cli* cli, uint16_t id, void* data);
 

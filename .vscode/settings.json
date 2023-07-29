@@ -3,6 +3,9 @@
         "python_playground.h": "c",
         "features.h": "c",
         "stdio.h": "c",
-        "protocol.h": "c"
+        "protocol.h": "c",
+        "thread": "c",
+        "gui.h": "c",
+        "input.h": "c"
     }
 }
