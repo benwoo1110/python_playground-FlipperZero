@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "python_playground.h": "c",
+        "features.h": "c",
+        "stdio.h": "c",
+        "protocol.h": "c"
+    }
+}

@@ -34,14 +34,22 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
             break;
         }
         // recieve payload
-        ProtocolData_t* data = protocol_recieve(app->cli, 5);
-        if (data == NULL) {
+        ProtocolData_t* proto_data = protocol_receive(app->cli, 5);
+        //vm->debug_msg = "Recieving";
+        if (proto_data == NULL || proto_data->id != GUI_DRAW_ID) {
+            //vm->debug_msg = "Ohno";
             continue;
         }
-        GuiDrawStrData_t* draw_str_data = data->data;
         ConnectedViewModel_t* vm = view_get_model(app->connected_view);
-        free(vm->draw_data);
-        vm->draw_data = draw_str_data;
+        if (vm->draw_data != NULL) {
+            free(vm->draw_data->draw_arr);
+            free(vm->draw_data);
+        }
+        vm->draw_data = proto_data->data;
+
+        char str[64];
+        snprintf(str, 64, "%u", ((GuiDrawData_t*)(vm->draw_data))->draw_arr_size);
+        vm->debug_msg = str;
         view_commit_model(app->connected_view, true);
     }
     // const char* close = "CLOSE";

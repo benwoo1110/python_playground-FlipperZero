@@ -23,15 +23,46 @@ bool connected_input_callback(InputEvent* input_event, void* ctx) {
 
 void connected_draw_callback(Canvas* canvas, void* ctx) {
     ConnectedViewModel_t* vm = ctx;
+
     canvas_clear(canvas);
-    if (vm->draw_data != NULL) {
-        canvas_draw_str_aligned(
-            canvas, 
-            vm->draw_data->x, 
-            vm->draw_data->y, 
-            AlignCenter, 
-            AlignCenter,
-            vm->draw_data->str);
+    // if (vm->debug_msg != NULL) {
+    //     canvas_draw_str_aligned(canvas, 5, 5, AlignCenter, AlignCenter, vm->debug_msg);
+    // }
+    
+    if (vm->draw_data == NULL) {
+        return;
+    }
+
+    // char aa[64];
+    // snprintf(aa, 64, "%u", vm->draw_data->id_test);
+    // canvas_draw_str_aligned(canvas, 20, 5, AlignCenter, AlignCenter, aa);
+
+    for (int i = 0; i < vm->draw_data->draw_arr_size; i++) {
+        ProtocolData_t* draw_element = &vm->draw_data->draw_arr[i];
+
+        // char str[16];
+        // snprintf(str, 16, "%lu", draw_element->data_size);
+        // canvas_draw_str_aligned(canvas, 20, 10+(i*10), AlignCenter, AlignCenter, str);
+        
+        switch (draw_element->id) {
+            case GUI_DRAW_STR_ID:
+            {
+                GuiDrawStrData_t* draw_str_data = (GuiDrawStrData_t*)draw_element->data;
+                canvas_draw_str_aligned(canvas, draw_str_data->x, draw_str_data->y, AlignCenter, AlignCenter, draw_str_data->str);
+            }
+                break;
+            case GUI_DRAW_FRAME_ID:
+            {
+                GuiDrawFrameData_t* draw_frame_data = (GuiDrawFrameData_t*)draw_element->data;
+                canvas_draw_frame(canvas, draw_frame_data->x, draw_frame_data->y, draw_frame_data->width, draw_frame_data->height);
+            }
+                break;
+            default:
+            {
+                
+            }
+                break;
+        }
     }
 }
 
@@ -41,7 +72,7 @@ View* connected_view_alloc(PPApp_t* app) {
     view_set_context(view, app);
     view_set_input_callback(view, connected_input_callback);
     view_set_draw_callback(view, connected_draw_callback);
-    view_allocate_model(view, ViewModelTypeLockFree, sizeof(ConnectedViewModel_t));
+    view_allocate_model(view, ViewModelTypeLocking, sizeof(ConnectedViewModel_t));
     view_dispatcher_add_view(app->view_dispatcher, CONNECTED_VIEW_ID, view);
     return view;
 }

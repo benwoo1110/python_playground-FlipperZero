@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <furi.h>
 #include <cli/cli.h>
@@ -17,7 +18,8 @@
 #define DISCONNECTED_VIEW_ID 2
 
 typedef struct ConnectedViewModel {
-    GuiDrawStrData_t*   draw_data;
+    GuiDrawData_t*   draw_data;
+    char*            debug_msg;
 } ConnectedViewModel_t;
 
 typedef struct Payload {
