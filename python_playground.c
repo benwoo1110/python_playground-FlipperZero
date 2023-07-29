@@ -1,18 +1,6 @@
 #include "python_playground.h"
 
 // ##############
-// TICK
-void tick_callback(void* ctx) {
-    FURI_LOG_D(LOG_TAG, "Tick");
-    PPApp_t* app = ctx;
-    if (app->cli_running) {
-        cli_write(app->cli, (uint8_t*)"Tick", 4);
-        cli_write(app->cli, (uint8_t*)"\r\n", 2);
-        return;
-    }
-}
-
-// ##############
 // CLI
 void cli_callback(Cli* cli, FuriString* args, void* ctx) {
     UNUSED(args);
@@ -51,6 +39,7 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
                     }
                     free(vm->draw_data->draw_arr);
                     free(vm->draw_data);
+                    vm->draw_data = NULL;
                 }
                 vm->draw_data = proto_data->data;
                 view_commit_model(app->connected_view, true);
@@ -100,8 +89,6 @@ PPApp_t* state_init() {
 
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
     view_dispatcher_enable_queue(app->view_dispatcher);
-    //view_dispatcher_set_event_callback_context(app->view_dispatcher, app);
-    //view_dispatcher_set_tick_event_callback(app->view_dispatcher, tick_callback, 1000);
 
     app->connected_view = connected_view_alloc(app);
     app->disconnected_view = disconnected_view_alloc(app);

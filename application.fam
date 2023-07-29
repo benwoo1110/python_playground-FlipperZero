@@ -4,6 +4,6 @@ App(
     apptype=FlipperAppType.EXTERNAL,
     entry_point="python_playground_app",
     requires=["gui", "cli"],
-    stack_size=4 * 1024,
+    stack_size=8 * 1024,
     fap_category="Dev",
 )

@@ -24,26 +24,13 @@ bool connected_input_callback(InputEvent* input_event, void* ctx) {
 void connected_draw_callback(Canvas* canvas, void* ctx) {
     ConnectedViewModel_t* vm = ctx;
 
-    canvas_clear(canvas);
-    // if (vm->debug_msg != NULL) {
-    //     canvas_draw_str_aligned(canvas, 5, 5, AlignCenter, AlignCenter, vm->debug_msg);
-    // }
-    
     if (vm->draw_data == NULL) {
         return;
     }
 
-    // char aa[64];
-    // snprintf(aa, 64, "%u", vm->draw_data->id_test);
-    // canvas_draw_str_aligned(canvas, 20, 5, AlignCenter, AlignCenter, aa);
-
+    canvas_clear(canvas);
     for (int i = 0; i < vm->draw_data->draw_arr_size; i++) {
         ProtocolData_t* draw_element = &vm->draw_data->draw_arr[i];
-
-        // char str[16];
-        // snprintf(str, 16, "%lu", draw_element->data_size);
-        // canvas_draw_str_aligned(canvas, 20, 10+(i*10), AlignCenter, AlignCenter, str);
-        
         switch (draw_element->id) {
             case GUI_DRAW_STR_ID: {
                 GuiDrawStrData_t* draw_str_data = (GuiDrawStrData_t*)draw_element->data;
