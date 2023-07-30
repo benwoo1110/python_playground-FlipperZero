@@ -6,6 +6,10 @@
         "protocol.h": "c",
         "thread": "c",
         "gui.h": "c",
-        "input.h": "c"
+        "input.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "ranges": "c"
     }
 }

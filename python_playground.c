@@ -2,6 +2,46 @@
 
 // ##############
 // CLI
+void run_data(PPApp_t* app, ProtocolData_t* proto_data) {
+    switch (proto_data->id) {
+        case GUI_DRAW_ID: {
+            ConnectedViewModel_t* vm = view_get_model(app->connected_view);
+            if (vm->draw_data != NULL) {
+                for (uint16_t i = 0; i < vm->draw_data->draw_arr_size; i++) {
+                    protocol_data_free(&vm->draw_data->draw_arr[i]);
+                }
+                free(vm->draw_data->draw_arr);
+                free(vm->draw_data);
+                vm->draw_data = NULL;
+            }
+            vm->draw_data = proto_data->data;
+            view_commit_model(app->connected_view, true);
+            break;
+        }
+        case SPEAKER_PLAY_ID: {
+            SpeakerPlayData_t* speaker_play_data = proto_data->data;
+            if (!furi_hal_speaker_is_mine() && !furi_hal_speaker_acquire(25)) {
+                FURI_LOG_E(LOG_TAG, "Failed to acquire speaker");
+                break;
+            }
+            furi_hal_speaker_start(speaker_play_data->frequency, speaker_play_data->volume);
+            break;
+        }
+        case SPEAKER_STOP_ID: {
+            if (!furi_hal_speaker_is_mine()) {
+                break;
+            }
+            furi_hal_speaker_stop();
+            furi_hal_speaker_release();
+            break;
+        }
+        default: {
+            FURI_LOG_E(LOG_TAG, "Unknown protocol id: %d", proto_data->id);
+            break;
+        }
+    }
+}
+
 void cli_callback(Cli* cli, FuriString* args, void* ctx) {
     UNUSED(args);
     FURI_LOG_I(LOG_TAG, "CLI connection...");
@@ -29,28 +69,7 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
         if (proto_data == NULL) {
             continue;
         }
-
-        switch (proto_data->id) {
-            case GUI_DRAW_ID: {
-                ConnectedViewModel_t* vm = view_get_model(app->connected_view);
-                if (vm->draw_data != NULL) {
-                    for (uint16_t i = 0; i < vm->draw_data->draw_arr_size; i++) {
-                        protocol_data_free(&vm->draw_data->draw_arr[i]);
-                    }
-                    free(vm->draw_data->draw_arr);
-                    free(vm->draw_data);
-                    vm->draw_data = NULL;
-                }
-                vm->draw_data = proto_data->data;
-                view_commit_model(app->connected_view, true);
-                break;
-            }
-            default: {
-                FURI_LOG_E(LOG_TAG, "Unknown protocol id: %d", proto_data->id);
-                break;
-            }
-        }
-
+        run_data(app, proto_data);
         free(proto_data);
     }
 

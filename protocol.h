@@ -18,6 +18,9 @@
 #define GUI_DRAW_FRAME_ID       0x2003
 #define GUI_DRAW_RFRAME_ID      0x2004
 
+#define SPEAKER_PLAY_ID         0x3000
+#define SPEAKER_STOP_ID         0x3001
+
 typedef struct ProtocolPayload {
     uint16_t    id;
     uint32_t    data_size;
@@ -68,6 +71,11 @@ typedef struct GuiDrawRFrameData {
     uint8_t     height;
     uint8_t     radius;
 } GuiDrawRFrameData_t;
+
+typedef struct SpeakerPlayData {
+    float       frequency;
+    float       volume;
+} SpeakerPlayData_t;
 
 void protocol_payload_free(ProtocolPayload_t* payload);
 

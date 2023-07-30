@@ -23,23 +23,27 @@ void protocol_data_free(ProtocolData_t* data) {
 ProtocolData_t* protocol_receive(Cli* cli, uint32_t timeout_ms) {
     uint16_t id;
     uint32_t data_size;
-    uint8_t* data;
+    void* data = NULL;
     if (cli_read_timeout(cli, (uint8_t*)&id, sizeof(uint16_t), timeout_ms) < sizeof(uint16_t)) {
         return NULL;
     }
     if (cli_read_timeout(cli, (uint8_t*)&data_size, sizeof(uint32_t), timeout_ms) < sizeof(uint32_t)) {
         return NULL;
     }
-    data = malloc(data_size);
-    if (cli_read_timeout(cli, data, data_size, timeout_ms) < data_size) {
-        free(data);
-        return NULL;
+    if (data_size > 0) {
+        uint8_t* raw_data = malloc(data_size);
+        if (cli_read_timeout(cli, raw_data, data_size, timeout_ms) < data_size) {
+            free(raw_data);
+            return NULL;
+        }
+        data = protocol_decode(id, data_size, raw_data);
+        free(raw_data);
     }
+
     ProtocolData_t* decoded_data = malloc(sizeof(ProtocolData_t));
     decoded_data->id = id;
     decoded_data->data_size = data_size;
-    decoded_data->data = protocol_decode(id, data_size, data);
-    free(data);
+    decoded_data->data = data;
     return decoded_data;
 }
 
@@ -73,6 +77,11 @@ void uint16_decode(uint8_t** data, uint16_t* out) {
 void uint32_decode(uint8_t** data, uint32_t* out) {
     *out = *(uint32_t*)*data;
     *data += sizeof(uint32_t);
+}
+
+void float_decode(uint8_t** data, float* out) {
+    *out = *(float*)*data;
+    *data += sizeof(float);
 }
 
 void str_decode(uint8_t** data, char** out) {
@@ -137,6 +146,13 @@ void* gui_draw_rframe_decode(uint8_t* data) {
     return draw_data;
 }
 
+void* speaker_play_decode(uint8_t* data) {
+    SpeakerPlayData_t* play_data = malloc(sizeof(SpeakerPlayData_t));
+    float_decode(&data, &play_data->frequency);
+    float_decode(&data, &play_data->volume);
+    return play_data;
+}
+
 void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
     UNUSED(data_size);
     switch (id) {
@@ -145,6 +161,9 @@ void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
         case GUI_DRAW_STR_ALIGN_ID: return gui_draw_str_align_decode(data);
         case GUI_DRAW_FRAME_ID: return gui_draw_frame_decode(data);
         case GUI_DRAW_RFRAME_ID: return gui_draw_rframe_decode(data);
+
+        case SPEAKER_PLAY_ID: return speaker_play_decode(data);
+
         default: return NULL;
     }
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include <furi.h>
+#include <furi_hal.h>
 #include <cli/cli.h>
 #include <gui/gui.h>
 #include <gui/elements.h>
