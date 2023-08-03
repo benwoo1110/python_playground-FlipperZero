@@ -5,21 +5,28 @@
 #include <input/input.h>
 #include <gui/gui.h>
 
-#define CNT_FLIPPER_START_ID    0x0001
-#define CNT_PYTHON_START_ID     0x0002
-#define CNT_FLIPPER_STOP_ID     0xFFF1
-#define CNT_PYTHON_STOP_ID      0xFFF2
+#define CNT_FLIPPER_START_ID        0x0001
+#define CNT_PYTHON_START_ID         0x0002
+#define CNT_FLIPPER_STOP_ID         0xFFF1
+#define CNT_PYTHON_STOP_ID          0xFFF2
 
-#define INPUT_ID                0x1001
+#define INPUT_ID                    0x1001
 
-#define GUI_DRAW_ID             0x2000
-#define GUI_DRAW_STR_ID         0x2001
-#define GUI_DRAW_STR_ALIGN_ID   0x2002
-#define GUI_DRAW_FRAME_ID       0x2003
-#define GUI_DRAW_RFRAME_ID      0x2004
+#define GUI_DRAW_ID                 0x2000
+#define GUI_DRAW_STR_ID             0x2001
+#define GUI_DRAW_STR_ALIGN_ID       0x2002
+#define GUI_DRAW_FRAME_ID           0x2003
+#define GUI_DRAW_RFRAME_ID          0x2004
 
-#define SPEAKER_PLAY_ID         0x3000
-#define SPEAKER_STOP_ID         0x3001
+#define HW_SPEAKER_PLAY_ID          0x3000
+#define HW_SPEAKER_STOP_ID          0x3001
+#define HW_SPEAKER_SET_VOLUME_ID    0x3002
+#define HW_VIBRATOR_ON_ID           0x3003
+#define HW_VIBRATOR_OFF_ID          0x3004
+#define HW_LIGHT_SET_ID             0x3005
+#define HW_LIGHT_SEQUENCE_ID        0x3006
+#define HW_LIGHT_BLINK_ON_ID        0x3007
+#define HW_LIGHT_BLINK_OFF_ID       0x3008
 
 typedef struct ProtocolPayload {
     uint16_t    id;
@@ -76,6 +83,19 @@ typedef struct SpeakerPlayData {
     float       frequency;
     float       volume;
 } SpeakerPlayData_t;
+
+typedef struct SpeakerSetVolumeData {
+    float       volume;
+} SpeakerSetVolumeData_t;
+
+typedef struct LightSetData {
+    Light       light;
+    uint8_t     value;
+} LightSetData_t;
+
+typedef struct LightSequenceData {
+    char*      sequence;
+} LightSequenceData_t;
 
 void protocol_payload_free(ProtocolPayload_t* payload);
 

@@ -153,6 +153,25 @@ void* speaker_play_decode(uint8_t* data) {
     return play_data;
 }
 
+void* speaker_set_volume_decode(uint8_t* data) {
+    SpeakerSetVolumeData_t* volume_data = malloc(sizeof(SpeakerSetVolumeData_t));
+    float_decode(&data, &volume_data->volume);
+    return volume_data;
+}
+
+void* light_set_decode(uint8_t* data) {
+    LightSetData_t* light_data = malloc(sizeof(LightSetData_t));
+    uint8_decode(&data, &light_data->light);
+    uint8_decode(&data, &light_data->value);
+    return light_data;
+}
+
+void* light_sequence_decode(uint8_t* data) {
+    LightSequenceData_t* sequence_data = malloc(sizeof(LightSequenceData_t));
+    str_decode(&data, &sequence_data->sequence);
+    return sequence_data;
+}
+
 void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
     UNUSED(data_size);
     switch (id) {
@@ -162,7 +181,10 @@ void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
         case GUI_DRAW_FRAME_ID: return gui_draw_frame_decode(data);
         case GUI_DRAW_RFRAME_ID: return gui_draw_rframe_decode(data);
 
-        case SPEAKER_PLAY_ID: return speaker_play_decode(data);
+        case HW_SPEAKER_PLAY_ID: return speaker_play_decode(data);
+        case HW_SPEAKER_SET_VOLUME_ID: return speaker_set_volume_decode(data);
+        case HW_LIGHT_SET_ID: return light_set_decode(data);
+        case HW_LIGHT_SEQUENCE_ID: return light_sequence_decode(data);
 
         default: return NULL;
     }

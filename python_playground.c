@@ -14,11 +14,12 @@ void run_data(PPApp_t* app, ProtocolData_t* proto_data) {
                 free(vm->draw_data);
                 vm->draw_data = NULL;
             }
-            vm->draw_data = proto_data->data;
+            vm->draw_data = malloc(sizeof(GuiDrawData_t));
+            memcpy(vm->draw_data, proto_data->data, sizeof(GuiDrawData_t));
             view_commit_model(app->connected_view, true);
             break;
         }
-        case SPEAKER_PLAY_ID: {
+        case HW_SPEAKER_PLAY_ID: {
             SpeakerPlayData_t* speaker_play_data = proto_data->data;
             if (!furi_hal_speaker_is_mine() && !furi_hal_speaker_acquire(25)) {
                 FURI_LOG_E(LOG_TAG, "Failed to acquire speaker");
@@ -27,7 +28,7 @@ void run_data(PPApp_t* app, ProtocolData_t* proto_data) {
             furi_hal_speaker_start(speaker_play_data->frequency, speaker_play_data->volume);
             break;
         }
-        case SPEAKER_STOP_ID: {
+        case HW_SPEAKER_STOP_ID: {
             if (!furi_hal_speaker_is_mine()) {
                 break;
             }
@@ -35,6 +36,25 @@ void run_data(PPApp_t* app, ProtocolData_t* proto_data) {
             furi_hal_speaker_release();
             break;
         }
+        case HW_VIBRATOR_ON_ID: {
+            furi_hal_vibro_on(true);
+            break;
+        }
+        case HW_VIBRATOR_OFF_ID: {
+            furi_hal_vibro_on(false);
+            break;
+        }
+        case HW_LIGHT_SET_ID: {
+            LightSetData_t* light_set_data = proto_data->data;
+            furi_hal_light_set(light_set_data->light, light_set_data->value);
+            break;
+        }
+        // Disabled for now as it cause code blocking with delay
+        // case HW_LIGHT_SEQUENCE_ID: {
+        //     LightSequenceData_t* light_sequence_data = proto_data->data;
+        //     furi_hal_light_sequence(light_sequence_data->sequence);
+        //     break;
+        // }
         default: {
             FURI_LOG_E(LOG_TAG, "Unknown protocol id: %d", proto_data->id);
             break;
@@ -70,7 +90,7 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
             continue;
         }
         run_data(app, proto_data);
-        free(proto_data);
+        protocol_data_free(proto_data);
     }
 
     // disconnect
