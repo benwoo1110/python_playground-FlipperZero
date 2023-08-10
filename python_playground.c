@@ -19,6 +19,29 @@ void run_data(PPApp_t* app, ProtocolData_t* proto_data) {
             view_commit_model(app->connected_view, true);
             break;
         }
+        case GUI_ICON_ADD_ID: {
+            GuiIconAddData_t* icon_add_data = proto_data->data;
+
+            const uint8_t** frames = malloc(sizeof(uint8_t*));
+            frames[0] = icon_add_data->frame_data;
+
+            Icon icon = {
+                .width = icon_add_data->width,
+                .height = icon_add_data->height,
+                .frame_count = 1,
+                .frame_rate = 0,
+                .frames = frames,
+            };
+
+            Icon* iconp = malloc(sizeof(Icon));
+            memcpy(iconp, &icon, sizeof(Icon));
+
+            ConnectedViewModel_t* vm = view_get_model(app->connected_view);
+            IconDict_set_at(vm->icons, icon_add_data->icon_id, iconp);
+            view_commit_model(app->connected_view, false);
+
+            break;
+        }
         case HW_SPEAKER_PLAY_ID: {
             SpeakerPlayData_t* speaker_play_data = proto_data->data;
             if (!furi_hal_speaker_is_mine() && !furi_hal_speaker_acquire(25)) {
@@ -73,7 +96,14 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
 
     app->cli = cli;
     app->cli_running = true;
+
     view_dispatcher_switch_to_view(app->view_dispatcher, CONNECTED_VIEW_ID);    
+
+    ConnectedViewModel_t* vm;
+
+    vm = view_get_model(app->connected_view);
+    IconDict_init(vm->icons);
+    view_commit_model(app->connected_view, true);
 
     // connect
     protocol_send_empty(app->cli, CNT_FLIPPER_START_ID);
@@ -98,7 +128,9 @@ void cli_callback(Cli* cli, FuriString* args, void* ctx) {
 
     // cleanup
     app->cli = NULL;
-    ConnectedViewModel_t* vm = view_get_model(app->connected_view);
+    
+    vm = view_get_model(app->connected_view);
+    IconDict_clear(vm->icons);
     if (vm->draw_data != NULL) {
         for (uint16_t i = 0; i < vm->draw_data->draw_arr_size; i++) {
             protocol_data_free(&vm->draw_data->draw_arr[i]);

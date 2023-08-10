@@ -84,6 +84,14 @@ void float_decode(uint8_t** data, float* out) {
     *data += sizeof(float);
 }
 
+void bytes_decode(uint8_t** data, uint8_t** out) {
+    uint32_t bytes_size;
+    uint32_decode(data, &bytes_size);
+    *out = malloc(bytes_size);
+    memcpy(*out, *data, bytes_size);
+    *data += bytes_size;
+}
+
 void str_decode(uint8_t** data, char** out) {
     uint32_t str_size;
     uint32_decode(data, &str_size);
@@ -146,6 +154,23 @@ void* gui_draw_rframe_decode(uint8_t* data) {
     return draw_data;
 }
 
+void* gui_draw_icon_decode(uint8_t* data) {
+    GuiDrawIconData_t* draw_data = malloc(sizeof(GuiDrawIconData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->icon_id);
+    return draw_data;
+}
+
+void* gui_icon_add_decode(uint8_t* data) {   
+    GuiIconAddData_t* icon_data = malloc(sizeof(GuiIconAddData_t));
+    uint8_decode(&data, &icon_data->icon_id);
+    uint8_decode(&data, &icon_data->width);
+    uint8_decode(&data, &icon_data->height);
+    bytes_decode(&data, &icon_data->frame_data);
+    return icon_data;
+}
+
 void* speaker_play_decode(uint8_t* data) {
     SpeakerPlayData_t* play_data = malloc(sizeof(SpeakerPlayData_t));
     float_decode(&data, &play_data->frequency);
@@ -180,6 +205,8 @@ void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
         case GUI_DRAW_STR_ALIGN_ID: return gui_draw_str_align_decode(data);
         case GUI_DRAW_FRAME_ID: return gui_draw_frame_decode(data);
         case GUI_DRAW_RFRAME_ID: return gui_draw_rframe_decode(data);
+        case GUI_DRAW_ICON_ID: return gui_draw_icon_decode(data);
+        case GUI_ICON_ADD_ID: return gui_icon_add_decode(data);
 
         case HW_SPEAKER_PLAY_ID: return speaker_play_decode(data);
         case HW_SPEAKER_SET_VOLUME_ID: return speaker_set_volume_decode(data);

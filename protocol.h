@@ -17,6 +17,8 @@
 #define GUI_DRAW_STR_ALIGN_ID       0x2002
 #define GUI_DRAW_FRAME_ID           0x2003
 #define GUI_DRAW_RFRAME_ID          0x2004
+#define GUI_DRAW_ICON_ID            0x2005
+#define GUI_ICON_ADD_ID             0x2101
 
 #define HW_SPEAKER_PLAY_ID          0x3000
 #define HW_SPEAKER_STOP_ID          0x3001
@@ -29,7 +31,7 @@
 #define HW_LIGHT_BLINK_OFF_ID       0x3008
 
 typedef struct ProtocolPayload {
-    uint16_t    id;
+    uint16_t     id;
     uint32_t    data_size;
     uint8_t*    data;
 } ProtocolPayload_t;
@@ -78,6 +80,19 @@ typedef struct GuiDrawRFrameData {
     uint8_t     height;
     uint8_t     radius;
 } GuiDrawRFrameData_t;
+
+typedef struct GuiDrawIconData {
+    uint8_t     x;
+    uint8_t     y;
+    uint8_t     icon_id;
+} GuiDrawIconData_t;
+
+typedef struct GuiIconAddData {
+    uint8_t     icon_id;
+    uint8_t     width;
+    uint8_t     height;
+    uint8_t*    frame_data;
+} GuiIconAddData_t;
 
 typedef struct SpeakerPlayData {
     float       frequency;

@@ -3,12 +3,10 @@
 bool connected_input_callback(InputEvent* input_event, void* ctx) {
     FURI_LOG_D(LOG_TAG, "Connected input");
     PPApp_t* app = ctx;
-    furi_check(furi_mutex_acquire(app->mutex, FuriWaitForever) == FuriStatusOk);
 
     if (input_event->key == InputKeyBack) {
         app->cli_running = false;
         FURI_LOG_D(LOG_TAG, "Connected input back");
-        furi_mutex_release(app->mutex);
         return true;
     }
 
@@ -17,7 +15,6 @@ bool connected_input_callback(InputEvent* input_event, void* ctx) {
     input_data->type = input_event->type;
     protocol_send(app->cli, INPUT_ID, input_data);
     free(input_data);
-    furi_mutex_release(app->mutex);
     return true;
 }
 
@@ -52,9 +49,23 @@ void connected_draw_callback(Canvas* canvas, void* ctx) {
                 canvas_draw_rframe(canvas, draw_rframe_data->x, draw_rframe_data->y, draw_rframe_data->width, draw_rframe_data->height, draw_rframe_data->radius);
                 break;
             }
+            case GUI_DRAW_ICON_ID: {
+                GuiDrawIconData_t* draw_icon_data = (GuiDrawIconData_t*)draw_element->data;
+                Icon** iconp = IconDict_get(vm->icons, draw_icon_data->icon_id);
+                if (iconp == NULL) {
+                    FURI_LOG_E(LOG_TAG, "Icon not found");
+                    break;
+                }
+                canvas_draw_icon(canvas, draw_icon_data->x, draw_icon_data->y, *iconp);
+                break;
+            }
             default:
                 break;    
         }
+    }
+
+    if (vm->debug_msg != NULL) {
+        canvas_draw_str_aligned(canvas, 5, 15, AlignLeft, AlignCenter, vm->debug_msg);
     }
 }
 
