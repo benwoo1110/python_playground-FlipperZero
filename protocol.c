@@ -162,6 +162,75 @@ void* gui_draw_icon_decode(uint8_t* data) {
     return draw_data;
 }
 
+void* gui_draw_dot_decode(uint8_t* data) {
+    GuiDrawDotData_t* draw_data = malloc(sizeof(GuiDrawDotData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    return draw_data;
+}
+
+void* gui_draw_line_decode(uint8_t* data) {
+    GuiDrawLineData_t* draw_data = malloc(sizeof(GuiDrawLineData_t));
+    uint8_decode(&data, &draw_data->x1);
+    uint8_decode(&data, &draw_data->y1);
+    uint8_decode(&data, &draw_data->x2);
+    uint8_decode(&data, &draw_data->y2);
+    return draw_data;
+}
+
+void* gui_draw_circle_decode(uint8_t* data) {
+    GuiDrawCircleData_t* draw_data = malloc(sizeof(GuiDrawCircleData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->radius);
+    return draw_data;
+}
+
+void* gui_draw_disc_decode(uint8_t* data) {
+    GuiDrawDiscData_t* draw_data = malloc(sizeof(GuiDrawDiscData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->radius);
+    return draw_data;
+}
+
+void* gui_draw_triangle_decode(uint8_t* data) {
+    GuiDrawTriangleData_t* draw_data = malloc(sizeof(GuiDrawTriangleData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->base);
+    uint8_decode(&data, &draw_data->height);
+    uint8_decode(&data, &draw_data->direction);
+    return draw_data;
+}
+
+void* gui_draw_glyph_decode(uint8_t* data) {
+    GuiDrawGlyphData_t* draw_data = malloc(sizeof(GuiDrawGlyphData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint16_decode(&data, &draw_data->glyph_char);
+    return draw_data;
+}
+
+void* gui_draw_box_decode(uint8_t* data) {
+    GuiDrawBoxData_t* draw_data = malloc(sizeof(GuiDrawBoxData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->width);
+    uint8_decode(&data, &draw_data->height);
+    return draw_data;
+}
+
+void* gui_draw_rbox_decode(uint8_t* data) {
+    GuiDrawRBoxData_t* draw_data = malloc(sizeof(GuiDrawRBoxData_t));
+    uint8_decode(&data, &draw_data->x);
+    uint8_decode(&data, &draw_data->y);
+    uint8_decode(&data, &draw_data->width);
+    uint8_decode(&data, &draw_data->height);
+    uint8_decode(&data, &draw_data->radius);
+    return draw_data;
+}
+
 void* gui_icon_add_decode(uint8_t* data) {   
     GuiIconAddData_t* icon_data = malloc(sizeof(GuiIconAddData_t));
     uint8_decode(&data, &icon_data->icon_id);
@@ -206,6 +275,15 @@ void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
         case GUI_DRAW_FRAME_ID: return gui_draw_frame_decode(data);
         case GUI_DRAW_RFRAME_ID: return gui_draw_rframe_decode(data);
         case GUI_DRAW_ICON_ID: return gui_draw_icon_decode(data);
+        case GUI_DRAW_DOT_ID: return gui_draw_dot_decode(data);
+        case GUI_DRAW_LINE_ID: return gui_draw_line_decode(data);
+        case GUI_DRAW_CIRCLE_ID: return gui_draw_circle_decode(data);
+        case GUI_DRAW_DISC_ID: return gui_draw_disc_decode(data);
+        case GUI_DRAW_TRIANGLE_ID: return gui_draw_triangle_decode(data);
+        case GUI_DRAW_GLYPH_ID: return gui_draw_glyph_decode(data);
+        case GUI_DRAW_BOX_ID: return gui_draw_box_decode(data);
+        case GUI_DRAW_RBOX_ID: return gui_draw_rbox_decode(data);
+
         case GUI_ICON_ADD_ID: return gui_icon_add_decode(data);
 
         case HW_SPEAKER_PLAY_ID: return speaker_play_decode(data);

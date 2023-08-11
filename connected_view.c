@@ -59,6 +59,46 @@ void connected_draw_callback(Canvas* canvas, void* ctx) {
                 canvas_draw_icon(canvas, draw_icon_data->x, draw_icon_data->y, *iconp);
                 break;
             }
+            case GUI_DRAW_DOT_ID: {
+                GuiDrawDotData_t* draw_dot_data = (GuiDrawDotData_t*)draw_element->data;
+                canvas_draw_dot(canvas, draw_dot_data->x, draw_dot_data->y);
+                break;
+            }
+            case GUI_DRAW_LINE_ID: {
+                GuiDrawLineData_t* draw_line_data = (GuiDrawLineData_t*)draw_element->data;
+                canvas_draw_line(canvas, draw_line_data->x1, draw_line_data->y1, draw_line_data->x2, draw_line_data->y2);
+                break;
+            }
+            case GUI_DRAW_CIRCLE_ID: {
+                GuiDrawCircleData_t* draw_circle_data = (GuiDrawCircleData_t*)draw_element->data;
+                canvas_draw_circle(canvas, draw_circle_data->x, draw_circle_data->y, draw_circle_data->radius);
+                break;
+            }
+            case GUI_DRAW_DISC_ID: {
+                GuiDrawDiscData_t* draw_disc_data = (GuiDrawDiscData_t*)draw_element->data;
+                canvas_draw_disc(canvas, draw_disc_data->x, draw_disc_data->y, draw_disc_data->radius);
+                break;
+            }
+            case GUI_DRAW_TRIANGLE_ID: {
+                GuiDrawTriangleData_t* draw_triangle_data = (GuiDrawTriangleData_t*)draw_element->data;
+                canvas_draw_triangle(canvas, draw_triangle_data->x, draw_triangle_data->y, draw_triangle_data->base, draw_triangle_data->height, draw_triangle_data->direction);
+                break;
+            }
+            case GUI_DRAW_GLYPH_ID: {
+                GuiDrawGlyphData_t* draw_glyph_data = (GuiDrawGlyphData_t*)draw_element->data;
+                canvas_draw_glyph(canvas, draw_glyph_data->x, draw_glyph_data->y, draw_glyph_data->glyph_char);
+                break;
+            }
+            case GUI_DRAW_BOX_ID: {
+                GuiDrawBoxData_t* draw_box_data = (GuiDrawBoxData_t*)draw_element->data;
+                canvas_draw_box(canvas, draw_box_data->x, draw_box_data->y, draw_box_data->width, draw_box_data->height);
+                break;
+            }
+            case GUI_DRAW_RBOX_ID: {
+                GuiDrawRBoxData_t* draw_rbox_data = (GuiDrawRBoxData_t*)draw_element->data;
+                canvas_draw_rbox(canvas, draw_rbox_data->x, draw_rbox_data->y, draw_rbox_data->width, draw_rbox_data->height, draw_rbox_data->radius);
+                break;
+            }
             default:
                 break;    
         }
