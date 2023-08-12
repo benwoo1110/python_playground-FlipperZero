@@ -240,6 +240,24 @@ void* gui_icon_add_decode(uint8_t* data) {
     return icon_data;
 }
 
+void* gui_set_color_decode(uint8_t* data) {
+    GuiSetColorData_t* color_data = malloc(sizeof(GuiSetColorData_t));
+    uint8_decode(&data, &color_data->color);
+    return color_data;
+}
+
+void* gui_set_font_decode(uint8_t* data) {
+    GuiSetFontData_t* font_data = malloc(sizeof(GuiSetFontData_t));
+    uint8_decode(&data, &font_data->font);
+    return font_data;
+}
+
+void* gui_set_font_direction_decode(uint8_t* data) {
+    GuiSetFontDirectionData_t* font_direction_data = malloc(sizeof(GuiSetFontDirectionData_t));
+    uint8_decode(&data, &font_direction_data->direction);
+    return font_direction_data;
+}
+
 void* speaker_play_decode(uint8_t* data) {
     SpeakerPlayData_t* play_data = malloc(sizeof(SpeakerPlayData_t));
     float_decode(&data, &play_data->frequency);
@@ -285,6 +303,10 @@ void* protocol_decode(uint16_t id, uint32_t data_size, uint8_t* data) {
         case GUI_DRAW_RBOX_ID: return gui_draw_rbox_decode(data);
 
         case GUI_ICON_ADD_ID: return gui_icon_add_decode(data);
+
+        case GUI_SET_COLOR_ID: return gui_set_color_decode(data);
+        case GUI_SET_FONT_ID: return gui_set_font_decode(data);
+        case GUI_SET_FONT_DIRECTION_ID: return gui_set_font_direction_decode(data);
 
         case HW_SPEAKER_PLAY_ID: return speaker_play_decode(data);
         case HW_SPEAKER_SET_VOLUME_ID: return speaker_set_volume_decode(data);

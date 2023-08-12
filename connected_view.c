@@ -99,8 +99,27 @@ void connected_draw_callback(Canvas* canvas, void* ctx) {
                 canvas_draw_rbox(canvas, draw_rbox_data->x, draw_rbox_data->y, draw_rbox_data->width, draw_rbox_data->height, draw_rbox_data->radius);
                 break;
             }
+            case GUI_SET_COLOR_ID: {
+                GuiSetColorData_t* set_color_data = (GuiSetColorData_t*)draw_element->data;
+                canvas_set_color(canvas, set_color_data->color);
+                break;
+            }
+            case GUI_SET_COLOR_INVERTED_ID: {
+                canvas_invert_color(canvas);
+                break;
+            }
+            case GUI_SET_FONT_ID: {
+                GuiSetFontData_t* set_font_data = (GuiSetFontData_t*)draw_element->data;
+                canvas_set_font(canvas, set_font_data->font);
+                break;
+            }
+            case GUI_SET_FONT_DIRECTION_ID: {
+                GuiSetFontDirectionData_t* set_font_direction_data = (GuiSetFontDirectionData_t*)draw_element->data;
+                canvas_set_font_direction(canvas, set_font_direction_data->direction);
+                break;
+            }
             default:
-                break;    
+                break;
         }
     }
 

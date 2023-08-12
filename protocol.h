@@ -48,6 +48,11 @@
 
 #define GUI_ICON_ADD_ID                     0x2200
 
+#define GUI_SET_COLOR_ID                    0x2300
+#define GUI_SET_COLOR_INVERTED_ID           0x2301
+#define GUI_SET_FONT_ID                     0x2302
+#define GUI_SET_FONT_DIRECTION_ID           0x2303
+
 #define HW_SPEAKER_PLAY_ID                  0x3000
 #define HW_SPEAKER_STOP_ID                  0x3001
 #define HW_SPEAKER_SET_VOLUME_ID            0x3002
@@ -174,6 +179,18 @@ typedef struct GuiIconAddData {
     uint8_t     height;
     uint8_t*    frame_data;
 } GuiIconAddData_t;
+
+typedef struct GuiSetColorData {
+    Color       color;
+} GuiSetColorData_t;
+
+typedef struct GuiSetFontData {
+    Font        font;
+} GuiSetFontData_t;
+
+typedef struct GuiSetFontDirectionData {
+    CanvasDirection direction;
+} GuiSetFontDirectionData_t;
 
 typedef struct SpeakerPlayData {
     float       frequency;
